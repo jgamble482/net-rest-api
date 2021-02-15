@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Entities;
 
 namespace api.Repositories
 {
-    interface IUserRepo
+    public interface IUserRepo
     {
+        public Task<List<AppUser>> GetAll();
+
+        public Task<AppUser> GetUser(int id);
     }
 }
