@@ -25,6 +25,7 @@ namespace api.Controllers
         }
 
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO info)
         {
@@ -44,6 +45,29 @@ namespace api.Controllers
             
 
             
+        }
+
+        [HttpPost("login")]
+
+        public async Task<IActionResult> LoginUser([FromBody] LoginDTO login)
+        {
+            var user = await _userRepo.GetUser(login.Username);
+
+            if (user == null) return Unauthorized("Invalid Username");
+
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
+
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
+            }
+
+            return Ok(user);
+
+
+
         }
     }
 }
