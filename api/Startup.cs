@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Repositories;
+using api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -47,6 +48,7 @@ namespace api
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<ITokenService, TokenService>();
             
 
         }
