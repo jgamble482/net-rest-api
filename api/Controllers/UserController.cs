@@ -28,6 +28,7 @@ namespace api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
+
             return Ok(await _userRepo.GetUser(id));
         }
             

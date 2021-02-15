@@ -33,5 +33,13 @@ namespace api.Repositories
         {
             return await _context.Users.FindAsync(id);
         }
+
+        public async Task<bool> UserExists(string username)
+        {
+            if (await _context.Users.AnyAsync(u => u.UserName == username.ToLower()))
+                return true;
+
+            return false;
+        }
     }
 }

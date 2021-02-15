@@ -1,4 +1,5 @@
 ﻿using api.Data;
+using api.DTOs;
 using api.Entities;
 using api.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -25,19 +26,20 @@ namespace api.Controllers
 
         [HttpPost("register")]
         
-        public async Task<IActionResult> RegisterUser(string userName, string password)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO info)
         {
+            if (await _userRepo.UserExists(info.Username) == true) return BadRequest("Username already exists");
             using var hmac = new HMACSHA512();
 
             var user = new AppUser
             {
-                UserName = userName,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)),
+                UserName = info.Username,
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(info.Password)),
                 PasswordSalt = hmac.Key
 
             };
 
-            return CreatedAtAction("register", await _userRepo.CreateUser(user));
+            return CreatedAtAction(nameof(RegisterUser), await _userRepo.CreateUser(user));
 
             
 

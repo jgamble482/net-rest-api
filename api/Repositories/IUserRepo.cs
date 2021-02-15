@@ -13,5 +13,7 @@ namespace api.Repositories
         public Task<AppUser> GetUser(int id);
 
         public Task<AppUser> CreateUser(AppUser user);
+
+        public Task<bool> UserExists(string username);
     }
 }
