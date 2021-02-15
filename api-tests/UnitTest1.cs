@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace api_test
+namespace api_tests
 {
     [TestClass]
     public class UnitTest1
