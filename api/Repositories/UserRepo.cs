@@ -15,6 +15,14 @@ namespace api.Repositories
         {
             _context = context;  
         }
+
+        public async Task<AppUser> CreateUser(AppUser user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
         public async Task<List<AppUser>> GetAll()
         {
             return await _context.Users.ToListAsync();
@@ -23,7 +31,7 @@ namespace api.Repositories
 
         public async Task<AppUser> GetUser(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FindAsync(id);
         }
     }
 }
