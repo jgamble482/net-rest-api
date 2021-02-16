@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using api.Data;
+using api.Extensions;
 using api.Repositories;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +35,7 @@ namespace api
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddApplicationServices(Configuration);
             services.AddControllers();
             services.AddCors(options =>
             {
@@ -59,12 +61,7 @@ namespace api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });
             });
 
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-            });
-            services.AddScoped<IUserRepo, UserRepo>();
-            services.AddScoped<ITokenService, TokenService>();
+
             
 
         }
