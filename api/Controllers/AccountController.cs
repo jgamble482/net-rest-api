@@ -2,6 +2,7 @@
 using api.DTOs;
 using api.Entities;
 using api.Repositories;
+using api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,10 +19,12 @@ namespace api.Controllers
     public class AccountController : ControllerBase
     {
         private IUserRepo _userRepo;
+        private readonly ITokenService _tokenService;
 
-        public AccountController(IUserRepo userRepo)
+        public AccountController(IUserRepo userRepo, ITokenService tokenService)
         {
             _userRepo = userRepo;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -40,7 +43,9 @@ namespace api.Controllers
 
             };
 
-            return CreatedAtAction(nameof(RegisterUser), await _userRepo.CreateUser(user));
+            await _userRepo.CreateUser(user);
+
+            return CreatedAtAction(nameof(RegisterUser), new UserDTO {Username = user.UserName, Token = _tokenService.CreateToken(user) } );
 
             
 
@@ -48,6 +53,7 @@ namespace api.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
 
         public async Task<IActionResult> LoginUser([FromBody] LoginDTO login)
         {
@@ -64,7 +70,7 @@ namespace api.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
             }
 
-            return Ok(user);
+            return Ok(new UserDTO { Username = user.UserName, Token = _tokenService.CreateToken(user) });
 
 
 

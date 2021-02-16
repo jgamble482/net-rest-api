@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Repositories;
 using api.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers
 {
@@ -20,12 +21,14 @@ namespace api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
             return Ok(await _userRepo.GetAll());
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUser(int id)
         {
 
