@@ -37,24 +37,14 @@ namespace api
 
             services.AddApplicationServices(Configuration);
             services.AddControllers();
+            services.AddRouting(options => options.LowercaseUrls = true);
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("TokenKey"))),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-
-                    };
-                });
+            services.AddIdentityServices(Configuration);
                 
             services.AddSwaggerGen(c =>
             {
