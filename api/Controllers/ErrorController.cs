@@ -24,7 +24,7 @@ namespace api.Controllers
         [HttpGet("auth")]
         public IActionResult GetSecret()
         {
-            return Ok("secret");
+            return Unauthorized("secret");
         }
 
         [HttpGet("not-found")]
@@ -34,7 +34,7 @@ namespace api.Controllers
 
             if (thing == null) return NotFound();
 
-            return Ok(thing);
+            return NotFound(thing);
         }
 
         [HttpGet("server-error")]
@@ -44,7 +44,7 @@ namespace api.Controllers
 
             var thingToReturn = thing.ToString();
 
-            return Ok(thingToReturn);
+            return Problem(thingToReturn);
         }
 
         [HttpGet("bad-request")]
