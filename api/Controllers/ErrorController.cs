@@ -1,4 +1,5 @@
 ﻿using api.Data;
+using api.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,34 +22,38 @@ namespace api.Controllers
         }
 
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("auth")]
-        public IActionResult GetSecret()
+        public ActionResult<string> GetSecret()
         {
-            return Unauthorized("secret");
+            return "secret";
         }
 
         [HttpGet("not-found")]
-        public IActionResult GetNotFound()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<AppUser> GetNotFound()
         {
             var thing = _context.Users.Find(-1);
 
             if (thing == null) return NotFound();
 
-            return NotFound(thing);
+            return Ok(thing);
         }
 
         [HttpGet("server-error")]
-        public IActionResult GetServerError()
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<string> GetServerError()
         {
             var thing = _context.Users.Find(-1);
 
             var thingToReturn = thing.ToString();
 
-            return Problem(thingToReturn);
+            return thingToReturn;
         }
 
         [HttpGet("bad-request")]
-        public IActionResult GetBadRequest()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<string> GetBadRequest()
         {
             return BadRequest("Bad Request");
         }
