@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using api.Repositories;
 using api.Entities;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using api.DTOs;
 
 namespace api.Controllers
 {
@@ -15,24 +17,31 @@ namespace api.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepo _userRepo;
-        public UserController(IUserRepo userRepo)
+        private readonly IMapper _mapper;
+
+        public UserController(IUserRepo userRepo, IMapper mapper)
         {
-            _userRepo = userRepo; 
+            _userRepo = userRepo;
+            _mapper = mapper;
+            
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
-            return Ok(await _userRepo.GetAll());
+            var users = await _userRepo.GetAll();
+            var usersToReturn = _mapper.Map<IEnumerable<MemberDTO>>(users);
+
+            return Ok(usersToReturn);
         }
 
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<IActionResult> GetUser(int id)
+
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetUserByUsername([FromRoute] string username)
         {
 
-            return Ok(await _userRepo.GetUser(id));
+            return Ok(await _userRepo.GetMemberAsync(username));
         }
             
 

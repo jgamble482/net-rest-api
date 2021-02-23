@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.DTOs;
 using api.Entities;
 
 namespace api.Repositories
@@ -18,5 +19,13 @@ namespace api.Repositories
         public Task<AppUser> CreateUser(AppUser user);
 
         public Task<bool> UserExists(string username);
+
+        public void Update(AppUser user);
+
+        public Task<MemberDTO> GetMemberAsync(string username);
+
+        public Task<IEnumerable<MemberDTO>> GetMembersAsync();
+
+        public Task SaveAllAsync();
     }
 }
