@@ -26,6 +26,6 @@ namespace api.Repositories
 
         public Task<IEnumerable<MemberDTO>> GetMembersAsync();
 
-        public Task SaveAllAsync();
+        public Task<bool> SaveAllAsync();
     }
 }

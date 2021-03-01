@@ -71,13 +71,13 @@ namespace api_tests.Controller
 
         [TestMethod]
 
-        public async Task GetUserShouldReturnCorrectUserBasedOnIdProp()
+        public async Task GetUserByUsernameShouldReturnCorrectUserBasedOnIdProp()
         {
             //Arrange
             var user1 = users[0];
-            userRepo.Setup(repo => repo.GetUser(1)).ReturnsAsync(user1);
+            userRepo.Setup(repo => repo.GetUser("test")).ReturnsAsync(user1);
             //Act
-            var actualUser = await userController.GetUser(1) as OkObjectResult;
+            var actualUser = await userController.GetUserByUsername("test") as OkObjectResult;
 
             //Assert
             userRepo.Verify(userRepo => userRepo.GetUser(1), Times.Once());

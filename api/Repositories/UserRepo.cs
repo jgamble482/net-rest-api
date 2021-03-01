@@ -63,9 +63,11 @@ namespace api.Repositories
                 .SingleOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
         }
 
-        public async Task SaveAllAsync()
+        public async Task<bool> SaveAllAsync()
         {
-           await  _context.SaveChangesAsync();
+            if (await _context.SaveChangesAsync() > 0) return true;
+
+            return false;
         }
 
         public void Update(AppUser user)
