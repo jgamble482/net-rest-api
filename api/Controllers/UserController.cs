@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using api.DTOs;
 using System.Security.Claims;
+using api.Extensions;
+using api.Services;
 
 namespace api.Controllers
 {
@@ -20,11 +22,13 @@ namespace api.Controllers
     {
         private readonly IUserRepo _userRepo;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public UserController(IUserRepo userRepo, IMapper mapper)
+        public UserController(IUserRepo userRepo, IMapper mapper, IPhotoService photoService)
         {
             _userRepo = userRepo;
             _mapper = mapper;
+            _photoService = photoService;
             
         }
 
@@ -48,9 +52,9 @@ namespace api.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateUser(MemberUpdateDTO memberUpdateDto)
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
 
-            var user = await  _userRepo.GetUser(username);
+            var user = await  _userRepo.GetUser(User.GetUser());
 
             _mapper.Map(memberUpdateDto, user);
 
@@ -59,6 +63,33 @@ namespace api.Controllers
             if (await _userRepo.SaveAllAsync()) return NoContent();
 
             return BadRequest("Failed to update user");
+
+        }
+
+        [HttpPost("add-photo")]
+
+        public async Task<IActionResult> AddPhoto(IFormFile file)
+        {
+            var user = await _userRepo.GetUser(User.GetUser());
+
+            var result = await _photoService.AddPhotoAsync(file);
+
+            if (result.Error != null) return BadRequest(result.Error.Message);
+
+            var photo = new Photo
+            {
+                Url = result.SecureUrl.AbsoluteUri,
+                PublicId = result.PublicId
+            };
+
+            if (user.Photos.Count == 0) photo.IsMain = true;
+
+            user.Photos.Add(photo);
+
+            if (await _userRepo.SaveAllAsync()) return CreatedAtAction(nameof(this.AddPhoto), _mapper.Map<PhotoDTO>(photo));
+
+            return BadRequest("There was an issue uploading a photo");
+
 
         }
 
