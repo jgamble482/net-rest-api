@@ -57,7 +57,7 @@ namespace api.Controllers
 
         public async Task<IActionResult> LoginUser([FromBody] LoginDTO login)
         {
-            var user = await _userRepo.GetUser(login.Username);
+            var user = await _userRepo.GetUserAsync(login.Username);
 
             if (user == null) return Unauthorized("Invalid Username");
 
@@ -70,7 +70,12 @@ namespace api.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
             }
 
-            return Ok(new UserDTO { Username = user.UserName, Token = _tokenService.CreateToken(user) });
+            return Ok(new UserDTO 
+            { 
+                Username = user.UserName, 
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+            });
 
 
 

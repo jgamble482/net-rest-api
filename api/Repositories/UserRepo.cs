@@ -51,12 +51,12 @@ namespace api.Repositories
                 .ToListAsync();
         }
 
-        public async Task<AppUser> GetUser(int id)
+        public async Task<AppUser> GetUserAsync(int id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<AppUser> GetUser(string username)
+        public async Task<AppUser> GetUserAsync(string username)
         {
             return await _context.Users
                 .Include(p => p.Photos)

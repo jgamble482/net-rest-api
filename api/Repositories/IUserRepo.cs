@@ -11,9 +11,9 @@ namespace api.Repositories
     {
         public Task<List<AppUser>> GetAll();
 
-        public Task<AppUser> GetUser(int id);
+        public Task<AppUser> GetUserAsync(int id);
 
-        public Task<AppUser> GetUser(string username);
+        public Task<AppUser> GetUserAsync(string username);
 
 
         public Task<AppUser> CreateUser(AppUser user);
