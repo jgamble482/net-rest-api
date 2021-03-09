@@ -12,6 +12,7 @@ using api.DTOs;
 using System.Security.Claims;
 using api.Extensions;
 using api.Services;
+using api.Helpers;
 
 namespace api.Controllers
 {
@@ -33,12 +34,13 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
-            var users = await _userRepo.GetAll();
-            var usersToReturn = _mapper.Map<IEnumerable<MemberDTO>>(users);
+            var users = await _userRepo.GetMembersAsync(userParams);
 
-            return Ok(usersToReturn);
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
+            return Ok(users);
         }
 
 
