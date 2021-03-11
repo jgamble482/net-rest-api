@@ -47,7 +47,7 @@ namespace api.Controllers
 
             await _userRepo.CreateUser(user);
 
-            return CreatedAtAction(nameof(RegisterUser), new UserDTO {Username = user.UserName, Token = _tokenService.CreateToken(user), KnownAs = user.KnownAs } );
+            return CreatedAtAction(nameof(RegisterUser), new UserDTO {Username = user.UserName, Token = _tokenService.CreateToken(user), KnownAs = user.KnownAs, Gender = user.Gender } );
 
             
 
@@ -72,12 +72,13 @@ namespace api.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
             }
 
-            return Ok(new UserDTO 
-            { 
-                Username = user.UserName, 
+            return Ok(new UserDTO
+            {
+                Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                KnownAs = user.KnownAs
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             });
 
 

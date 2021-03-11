@@ -16,13 +16,21 @@ namespace api.Helpers
             TotalCount = count;
             AddRange(items);
         }
-
+        /// <summary>
+        /// The current page that the user is on
+        /// </summary>
         public int CurrentPage { get; set; }
-
+        /// <summary>
+        /// The total amount of pages available from the query
+        /// </summary>
         public int TotalPages { get; set; }
-
+        /// <summary>
+        /// The amount of items per page
+        /// </summary>
         public int PageSize { get; set; }
-
+        /// <summary>
+        /// The total amount of items available from the query
+        /// </summary>
         public int TotalCount { get; set; }
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)

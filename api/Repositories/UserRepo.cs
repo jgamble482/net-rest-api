@@ -48,10 +48,28 @@ namespace api.Repositories
         public async Task<PaginatedList<MemberDTO>> GetMembersAsync(UserParams userParams)
         {
             var query = _context.Users
-                .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
-                .AsNoTracking();
+                .AsQueryable();
 
-            return await PaginatedList<MemberDTO>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            query = query.Where(users => users.UserName != userParams.CurrentUsername);
+            query = query.Where(users => users.Gender == userParams.Gender);
+
+            //Setting Date of Birth parameters
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+
+            //Filtering query by age range
+            query = query.Where(users => users.DateOfBirth >= minDob && users.DateOfBirth <= maxDob);
+
+            //Ordering the results with a switch statement
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(users => users.Created),
+
+                _ => query.OrderByDescending(users => users.LastActive)
+            };
+              
+
+            return await PaginatedList<MemberDTO>.CreateAsync(query.ProjectTo<MemberDTO>(_mapper.ConfigurationProvider).AsNoTracking(), userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<AppUser> GetUserAsync(int id)
