@@ -24,6 +24,7 @@ namespace api.Extensions
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<LogUserActivity>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
             return services;

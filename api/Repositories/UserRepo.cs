@@ -74,7 +74,9 @@ namespace api.Repositories
 
         public async Task<AppUser> GetUserAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(p => p.Photos)
+                .SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<AppUser> GetUserAsync(string username)

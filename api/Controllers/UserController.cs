@@ -18,6 +18,7 @@ namespace api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     public class UserController : ControllerBase
     {
