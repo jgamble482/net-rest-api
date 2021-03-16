@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace api.Repositories
 {
-    interface ILikesRepository
+    public interface ILikesRepository
     {
         Task<UserLike> GetUserLike(int sourceUserId, int likedUserId);
 
