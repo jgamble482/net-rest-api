@@ -2,6 +2,7 @@
 using api.DTOs;
 using api.Entities;
 using api.Extensions;
+using api.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,26 +24,26 @@ namespace api.Repositories
             return await _context.Likes.FindAsync(sourceUserId, likedUserId);
         }
 
-        public async Task<IEnumerable<LikeDTO>> GetUserLikes(string predicate, int userId)
+        public async Task<PaginatedList<LikeDTO>> GetUserLikes(LikeParams likeParams)
         {
             var users = _context.Users.OrderBy(u => u.UserName).AsQueryable();
             var likes = _context.Likes.AsQueryable();
 
-            switch (predicate)
+            switch (likeParams.Predicate)
             {
                 case "liked":
-                    likes = likes.Where(l => l.SourceUserId == userId);
+                    likes = likes.Where(l => l.SourceUserId == likeParams.UserId);
                     users = likes.Select(like => like.LikedUser);
                     break;
                 case "likedBy":
-                    likes = likes.Where(l => l.LikedUserId == userId);
+                    likes = likes.Where(l => l.LikedUserId == likeParams.UserId);
                     users = likes.Select(like => like.SourceUser);
                     break;
                 default:
                     break;
             }
 
-            return await users.Select(user => new LikeDTO
+            var likeDtos = users.Select(user => new LikeDTO
             {
                 Username = user.UserName,
                 KnownAs = user.KnownAs,
@@ -51,7 +52,9 @@ namespace api.Repositories
                 City = user.City,
                 Id = user.Id
 
-            }).ToListAsync();
+            });
+
+                return await PaginatedList<LikeDTO>.CreateAsync(likeDtos, likeParams.PageNumber, likeParams.PageSize);
 
         }
 
