@@ -62,5 +62,18 @@ namespace api.Controllers
 
 
         }
+
+        [HttpGet]
+
+        public async Task<IActionResult> GetMessagesForUser([FromQuery] MessageParams messageParams)
+        {
+            messageParams.Username = User.GetUser();
+
+            var messages = await _messageRepo.GetMessagesForUserAsync(messageParams);
+
+            Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
+
+            return Ok(messages);
+        }
     }
 }

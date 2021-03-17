@@ -16,7 +16,7 @@ namespace api.Repositories
 
         Task<Message> GetMessageAsync(int id);
 
-        Task<PaginatedList<MessageDTO>> GetMessagesForUserAsync();
+        Task<PaginatedList<MessageDTO>> GetMessagesForUserAsync(MessageParams messageParams);
 
         Task<IEnumerable<MessageDTO>> GetMessageThreadAsync();
 
