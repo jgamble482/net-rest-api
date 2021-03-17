@@ -1,4 +1,5 @@
-﻿using api.DTOs;
+﻿using api.Data;
+using api.DTOs;
 using api.Entities;
 using api.Helpers;
 using System;
@@ -10,19 +11,25 @@ namespace api.Repositories
 {
     public class MessageRepo : IMessageRepo
     {
+        private readonly DataContext _context;
+
+        public MessageRepo(DataContext context)
+        {
+            _context = context;
+        }
         public void AddMessage(Message message)
         {
-            throw new NotImplementedException();
+            _context.Messages.Add(message);
         }
 
         public void DeleteMessage(Message message)
         {
-            throw new NotImplementedException();
+            _context.Messages.Remove(message);
         }
 
-        public Task<Message> GetMessageAsync(int id)
+        public async Task<Message> GetMessageAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Messages.FindAsync(id);
         }
 
         public Task<PaginatedList<MessageDTO>> GetMessagesForUserAsync()
@@ -35,9 +42,11 @@ namespace api.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> SaveAllAsync()
+        public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            if (await _context.SaveChangesAsync() > 0) return true;
+
+            return false;
         }
     }
 }

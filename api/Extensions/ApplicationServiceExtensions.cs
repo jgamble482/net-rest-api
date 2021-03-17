@@ -23,6 +23,7 @@ namespace api.Extensions
             });
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<ILikesRepository, LikesRepository>();
+            services.AddScoped<IMessageRepo, MessageRepo>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<LogUserActivity>();

@@ -105,7 +105,7 @@ namespace api.Data.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("api.Entities.Photo", b =>
