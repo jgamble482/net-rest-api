@@ -18,7 +18,7 @@ namespace api.Repositories
 
         Task<PaginatedList<MessageDTO>> GetMessagesForUserAsync(MessageParams messageParams);
 
-        Task<IEnumerable<MessageDTO>> GetMessageThreadAsync();
+        Task<IEnumerable<MessageDTO>> GetMessageThreadAsync(string currentUsername, string recipientUsername);
 
         Task<bool> SaveAllAsync();
 
