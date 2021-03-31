@@ -34,7 +34,10 @@ namespace api.Repositories
 
         public async Task<Message> GetMessageAsync(int id)
         {
-            return await _context.Messages.FindAsync(id);
+            return await _context.Messages
+                .Include(u => u.Sender)
+                .Include(u => u.Recipient)
+                .SingleOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<PaginatedList<MessageDTO>> GetMessagesForUserAsync(MessageParams messageParams)

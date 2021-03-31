@@ -36,13 +36,10 @@ namespace api.Controllers
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO info)
         {
             if (await _userRepo.UserExists(info.Username) == true) return BadRequest("Username already exists");
-            using var hmac = new HMACSHA512();
 
             var user = _mapper.Map<AppUser>(info);
 
             user.UserName = info.Username;
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(info.Password));
-            user.PasswordSalt = hmac.Key;
   
 
             await _userRepo.CreateUser(user);
@@ -63,14 +60,6 @@ namespace api.Controllers
 
             if (user == null) return Unauthorized("Invalid Username");
 
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
-
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
-            }
 
             return Ok(new UserDTO
             {
