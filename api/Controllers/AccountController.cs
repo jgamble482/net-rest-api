@@ -5,7 +5,9 @@ using api.Repositories;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +21,17 @@ namespace api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private IUserRepo _userRepo;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public AccountController(IUserRepo userRepo, ITokenService tokenService, IMapper mapper)
+        public AccountController(ITokenService tokenService, IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
-            _userRepo = userRepo;
             _tokenService = tokenService;
             _mapper = mapper;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -35,16 +39,24 @@ namespace api.Controllers
         
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO info)
         {
-            if (await _userRepo.UserExists(info.Username) == true) return BadRequest("Username already exists");
+            if (await UserExists(info.Username) == true) return BadRequest("Username already exists");
 
             var user = _mapper.Map<AppUser>(info);
 
-            user.UserName = info.Username;
-  
+            user.UserName = info.Username.ToLower();
 
-            await _userRepo.CreateUser(user);
 
-            return CreatedAtAction(nameof(RegisterUser), new UserDTO {Username = user.UserName, Token = _tokenService.CreateToken(user), KnownAs = user.KnownAs, Gender = user.Gender } );
+            var result = await _userManager.CreateAsync(user, info.Password);
+
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+
+            if (!roleResult.Succeeded) return BadRequest(roleResult.Errors);
+
+
+
+            return CreatedAtAction(nameof(RegisterUser), new UserDTO {Username = user.UserName, Token = await _tokenService.CreateTokenAsync(user), KnownAs = user.KnownAs, Gender = user.Gender } );
 
             
 
@@ -56,7 +68,14 @@ namespace api.Controllers
 
         public async Task<IActionResult> LoginUser([FromBody] LoginDTO login)
         {
-            var user = await _userRepo.GetUserAsync(login.Username);
+            var user = await _userManager.Users
+                .Include(p => p.Photos)
+                .SingleOrDefaultAsync(u => u.UserName == login.Username.ToLower());
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+
+            if (!result.Succeeded) return Unauthorized();
+                
 
             if (user == null) return Unauthorized("Invalid Username");
 
@@ -64,7 +83,7 @@ namespace api.Controllers
             return Ok(new UserDTO
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateTokenAsync(user),
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
                 KnownAs = user.KnownAs,
                 Gender = user.Gender
@@ -72,6 +91,11 @@ namespace api.Controllers
 
 
 
+        }
+
+        public async Task<bool> UserExists(string username)
+        {
+            return await _userManager.Users.AnyAsync(u => u.UserName == username.ToLower());
         }
     }
 }
