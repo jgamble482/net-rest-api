@@ -92,7 +92,7 @@ namespace api.Controllers
 
 
         }
-
+        [HttpGet]
         public async Task<bool> UserExists(string username)
         {
             return await _userManager.Users.AnyAsync(u => u.UserName == username.ToLower());

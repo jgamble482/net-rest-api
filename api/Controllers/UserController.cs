@@ -19,7 +19,7 @@ namespace api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ServiceFilter(typeof(LogUserActivity))]
-    [Authorize]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserRepo _userRepo;
@@ -35,6 +35,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
+        [Authorize (Roles = "Admin , Member")]
         public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
             var user = await _userRepo.GetUserAsync(User.GetUser());
