@@ -49,6 +49,28 @@ namespace api.Controllers
         {
             return Ok("Only mods can see this");
         }
+
+        [HttpPost("edit-roles/{username}")]
+        public async Task<IActionResult> EditRoles(string username, [FromQuery] string roles)
+        {
+            var selectedRoles = roles.Split(",").ToArray();
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+
+            if (!result.Succeeded) return BadRequest("Failed to edit role");
+
+            result = await _userManager.AddToRolesAsync(user, userRoles.Except(selectedRoles));
+
+            if (!result.Succeeded) return BadRequest("Failed to update role");
+
+            return Ok(await _userManager.GetRolesAsync(user));
+
+
+        }
         
     }
 }
