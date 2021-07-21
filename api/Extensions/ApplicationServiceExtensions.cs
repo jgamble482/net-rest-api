@@ -2,6 +2,7 @@
 using api.Helpers;
 using api.Repositories;
 using api.Services;
+using api.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace api.Extensions
             {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
+            services.AddSingleton<PresenceTracker>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<ILikesRepository, LikesRepository>();
             services.AddScoped<IMessageRepo, MessageRepo>();
