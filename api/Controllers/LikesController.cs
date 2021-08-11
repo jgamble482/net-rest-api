@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Data;
 
 namespace api.Controllers
 {
@@ -16,13 +17,11 @@ namespace api.Controllers
     [ServiceFilter(typeof(LogUserActivity))]
     public class LikesController : ControllerBase
     {
-        private readonly IUserRepo _userRepo;
-        private readonly ILikesRepository _likesRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LikesController(IUserRepo userRepo, ILikesRepository likesRepository)
+        public LikesController(IUnitOfWork unitOfWork)
         {
-            _userRepo = userRepo;
-            _likesRepository = likesRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("{username}")]
@@ -30,14 +29,14 @@ namespace api.Controllers
         public async Task<IActionResult> AddLike(string username)
         {
             var sourceUserId = User.GetUserId();
-            var likedUser = await _userRepo.GetUserAsync(username);
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+            var likedUser = await _unitOfWork.UserRepository.GetUserAsync(username);
+            var sourceUser = await _unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
 
             if (likedUser == null) return NotFound();
 
             if (sourceUser.UserName == username) return BadRequest("You can't like yourself");
 
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
+            var userLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
 
             if (userLike != null) return BadRequest("You have already liked this user");
 
@@ -49,7 +48,7 @@ namespace api.Controllers
 
             sourceUser.LikedUsers.Add(userLike);
 
-            if (await _userRepo.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to like user");
         }
@@ -58,7 +57,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetUserLikes([FromQuery]LikeParams likeParams)
         {
             likeParams.UserId = User.GetUserId();
-            var users = await _likesRepository.GetUserLikes(likeParams);
+            var users = await _unitOfWork.LikesRepository.GetUserLikes(likeParams);
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 

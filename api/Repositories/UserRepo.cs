@@ -23,11 +23,10 @@ namespace api.Repositories
             _mapper = mapper;
         }
 
-        public async Task<AppUser> CreateUser(AppUser user)
+        public Task<AppUser> CreateUser(AppUser user)
         {
             _context.Users.Add(user);
-            await SaveAllAsync();
-            return user;
+            return Task.FromResult(user);
         }
 
         public async Task<List<AppUser>> GetAll()

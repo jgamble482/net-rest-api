@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using api.Data;
 
 namespace api.Helpers
 {
@@ -19,13 +20,13 @@ namespace api.Helpers
 
             var userId = resultContext.HttpContext.User.GetUserId();
 
-            var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepo>();
+            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
 
-            var user = await repo.GetUserAsync(userId);
+            var user = await uow.UserRepository.GetUserAsync(userId);
 
-            user.LastActive = DateTime.Now;
+            user.LastActive = DateTime.UtcNow;
 
-            await repo.SaveAllAsync();
+            await uow.Complete();
 
             
         }
