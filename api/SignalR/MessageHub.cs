@@ -44,6 +44,9 @@ namespace api.SignalR
 
             var messages = await _unitOfWork.MessageRepository.GetMessageThreadAsync(Context.User.GetUser(), otherUser);
 
+            if (_unitOfWork.HasChanges())
+                await _unitOfWork.Complete();
+
 
             await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
 
