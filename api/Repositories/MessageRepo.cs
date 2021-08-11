@@ -114,11 +114,6 @@ namespace api.Repositories
             _context.Connections.Remove(connection);
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            if (await _context.SaveChangesAsync() > 0) return true;
 
-            return false;
-        }
     }
 }

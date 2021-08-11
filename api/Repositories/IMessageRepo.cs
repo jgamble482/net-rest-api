@@ -29,7 +29,7 @@ namespace api.Repositories
 
         Task<IEnumerable<MessageDTO>> GetMessageThreadAsync(string currentUsername, string recipientUsername);
 
-        Task<bool> SaveAllAsync();
+        
 
 
 

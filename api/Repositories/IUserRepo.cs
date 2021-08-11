@@ -27,6 +27,6 @@ namespace api.Repositories
 
         public Task<PaginatedList<MemberDTO>> GetMembersAsync(UserParams userParams);
 
-        public Task<bool> SaveAllAsync();
+        
     }
 }
