@@ -4,6 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>650630fe-8073-4512-983a-29bd946f76cb</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>

@@ -39,13 +39,13 @@ namespace api.Controllers
         [Authorize (Roles = "Admin , Member")]
         public async Task<IActionResult> GetUsers([FromQuery] UserParams userParams)
         {
-            var user = await _unitOfWork.UserRepository.GetUserAsync(User.GetUser());
+            var gender = await _unitOfWork.UserRepository.GetUserGender(User.GetUser());
 
-            userParams.CurrentUsername = user.UserName;
+            userParams.CurrentUsername = User.GetUser();
 
             if(string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = user.Gender == "male" ? "female" : "male";
+                userParams.Gender = gender == "male" ? "female" : "male";
             }
 
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);

@@ -85,7 +85,10 @@ namespace api.Repositories
                 .SingleOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
         }
 
-
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users.Where(u => u.UserName == username).Select(u => u.Gender).FirstOrDefaultAsync();
+        }
 
         public void Update(AppUser user)
         {
