@@ -15,9 +15,9 @@ namespace api.Services
     {
         private readonly Cloudinary _cloudinary;
 
-        public PhotoService(IOptions<CloudinarySettings> config)
+        public PhotoService(IConfiguration config)
         {
-            var account = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
+            var account = new Account(config.GetValue<string>("CLOUD_NAME"), config.GetValue<string>("API_KEY"), config.GetValue<string>("API_SECRET"));
             _cloudinary = new Cloudinary(account);
         }
         public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)

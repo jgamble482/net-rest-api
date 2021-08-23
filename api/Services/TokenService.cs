@@ -19,7 +19,7 @@ namespace api.Services
 
         public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TOKEN_KEY"]));
             _userManager = userManager;
         }
         /// <summary>
